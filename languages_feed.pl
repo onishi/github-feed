@@ -31,7 +31,7 @@ my $repo_scraper = scraper {
 
 create_feed($language, $type);
 
-exit;
+exit(0);
 
 sub create_feed {
     my ($language, $type) = @_;
