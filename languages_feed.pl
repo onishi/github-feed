@@ -6,10 +6,10 @@ use URI;
 use Web::Scraper;
 use XML::Feed;
 use DateTime::Format::DateParse;
-use IO::All;
 use URI::Escape 'uri_escape';
 
 my $language = shift || 'Perl';
+my $type     = shift || 'updated';
 my $lang_uri = 'https://github.com/languages/%s/%s'; # lang, type
 my $repo_uri = 'https://github.com/%s/%s'; # author, project
 my $cache;
@@ -29,7 +29,7 @@ my $repo_scraper = scraper {
     process 'div.gravatar img',           'gravatar'       => '@src';
 };
 
-create_feed($language, $_) for qw(created updated);
+create_feed($language, $type);
 
 exit;
 
@@ -52,7 +52,7 @@ sub create_feed {
            $entry->content(make_content($repo, $info));
         $feed->add_entry($entry);
     }
-    $feed->as_xml > io(sprintf '%s.%s.xml', uri_escape(lc $language), $type);
+    print $feed->as_xml;
 }
 
 sub repo_info {
@@ -82,7 +82,8 @@ languages_feed.pl
 
 =head1 SYNOPSIS
 
-  % perl languages_feed.pl perl
+  % perl languages_feed.pl perl updated
+  % perl languages_feed.pl scala created
 
 =head1 DESCRIPTION
 
