@@ -39,7 +39,7 @@ sub create_feed {
     my $res = $list_scraper->scrape($uri);
     my $feed = XML::Feed->new('RSS', version => 2.0);
     $feed->title(sprintf 'Recent Github %s %s', ucfirst $language, ucfirst $type);
-    for my $repo (reverse @{$res->{repos} || []}) {
+    for my $repo (@{$res->{repos} || []}) {
         my $author  = $repo->{author} or next;
         my $project = $repo->{project} or next;
         my $info    = repo_info($author, $project);
