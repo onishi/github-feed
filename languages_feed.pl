@@ -68,3 +68,27 @@ sub make_content {
     $content .= $repo->{readme} || $repo->{description} || '';
     $content;
 }
+
+
+__END__
+
+=head1 NAME
+
+languages_feed.pl
+
+=head1 SYNOPSIS
+
+  % perl languages_feed.pl perl
+
+=head1 DESCRIPTION
+
+make github languages rss feed
+
+=head1 AUTHOR
+
+Yasuhiro Onishi E<lt>yasuhiro.onishi@gmail.comE<gt>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
