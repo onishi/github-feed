@@ -26,6 +26,7 @@ my $repo_scraper = scraper {
     process 'div.date abbr',              'modified'       => 'TEXT';
     process 'div#repository_description', 'description'    => 'TEXT';
     process 'div#readme',                 'readme'         => sub { $_->as_HTML };
+    process 'div.gravatar img',           'gravatar'       => '@src';
 };
 
 create_feed($language, $_) for qw(created updated);
@@ -48,7 +49,7 @@ sub create_feed {
            $entry->author($repo->{author});
            $entry->issued(DateTime::Format::DateParse->parse_datetime($info->{modified}));
            $entry->summary($repo->{description}) if $repo->{description};
-           $entry->content(make_content($info));
+           $entry->content(make_content($repo, $info));
         $feed->add_entry($entry);
     }
     $feed->as_xml > io(sprintf '%s.%s.xml', uri_escape(lc $language), $type);
@@ -62,10 +63,13 @@ sub repo_info {
 }
 
 sub make_content {
-    my $repo = shift or return;
+    my ($repo, $info) = @_;
     my $content = '';
-    $content .= sprintf '<blockquote>%s</blockquote>', $repo->{commit_message} if $repo->{commit_message};
-    $content .= $repo->{readme} || $repo->{description} || '';
+    $content .= sprintf '<img src="%s" alt="" width="30" height="30" align="left" />', $info->{gravatar} if $info->{gravatar};
+    $content .= sprintf '<pre>%s</pre>', $info->{commit_message} if $info->{commit_message};
+    $content .= '<br clear="all" />';
+    $content .= $info->{readme} || $info->{description} || '';
+    $content .= sprintf '<input value="git clone https://github.com/%s/%s.git" style="width: 60em" readonly="readonly" />', $repo->{author}, $repo->{project};
     $content;
 }
 
