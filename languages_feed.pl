@@ -75,8 +75,7 @@ sub make_content {
         $info->{actor} || '',
     ) if $info->{gravatar};
     $content .= sprintf(
-        '<pre>%s : %s</pre>',
-        $info->{actor} || '',
+        '<pre>%s</pre>',
         $info->{commit_message},
     ) if $info->{commit_message};
     $content .= '<br clear="all" />';
