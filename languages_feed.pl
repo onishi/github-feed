@@ -70,7 +70,7 @@ sub make_content {
     $content .= sprintf '<pre>%s</pre>', $info->{commit_message} if $info->{commit_message};
     $content .= '<br clear="all" />';
     $content .= $info->{readme} || $info->{description} || '';
-    $content .= sprintf '<input value="git clone git://github.com/%s/%s.git" style="width: 60em" readonly="readonly" />', $repo->{author}, $repo->{project};
+    $content .= sprintf '<br clear="all" /><input value="git clone git://github.com/%s/%s.git" style="width: 60em" readonly="readonly" />', $repo->{author}, $repo->{project};
     $content;
 }
 
