@@ -38,7 +38,7 @@ sub create_feed {
     my $uri = URI->new(sprintf $lang_uri, uri_escape($language), $type);
     my $res = $list_scraper->scrape($uri);
     my $feed = XML::Feed->new('RSS', version => 2.0);
-    $feed->title(sprintf 'Recent Github %s %s', ucfirst $language, ucfirst $type);
+    $feed->title(sprintf 'Recently %s %s Repositories - GitHub', ucfirst $type, ucfirst $language);
     $feed->link($uri);
     for my $repo (@{$res->{repos} || []}) {
         my $author  = $repo->{author} or next;
