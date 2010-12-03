@@ -26,7 +26,8 @@ my $repo_scraper = scraper {
     process 'div.date abbr',              'modified'       => 'TEXT';
     process 'div#repository_description', 'description'    => 'TEXT';
     process 'div#readme',                 'readme'         => sub { $_->as_HTML };
-    process 'div.gravatar img',           'gravatar'       => '@src';
+    process 'div.actor div.gravatar img', 'gravatar'       => '@src';
+    process 'div.actor div.name a',       'actor'          => 'TEXT';
 };
 
 create_feed($language, $type);
@@ -66,8 +67,18 @@ sub repo_info {
 sub make_content {
     my ($repo, $info) = @_;
     my $content = '';
-    $content .= sprintf '<img src="%s" alt="" width="30" height="30" align="left" />', $info->{gravatar} if $info->{gravatar};
-    $content .= sprintf '<pre>%s</pre>', $info->{commit_message} if $info->{commit_message};
+    $content .= sprintf(
+        '<a href="https://github.com/%s"><img src="%s" alt="%s" title="%s" width="30" height="30" align="left" /></a>',
+        $info->{actor} || '',
+        $info->{gravatar},
+        $info->{actor} || '',
+        $info->{actor} || '',
+    ) if $info->{gravatar};
+    $content .= sprintf(
+        '<pre>%s : %s</pre>',
+        $info->{actor} || '',
+        $info->{commit_message},
+    ) if $info->{commit_message};
     $content .= '<br clear="all" />';
     $content .= $info->{readme} || $info->{description} || '';
     $content .= sprintf '<br clear="all" /><input value="git clone git://github.com/%s/%s.git" style="width: 60em" readonly="readonly" />', $repo->{author}, $repo->{project};
