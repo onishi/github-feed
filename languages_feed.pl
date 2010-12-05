@@ -12,6 +12,8 @@ my $language = shift || 'Perl';
 my $type     = shift || 'updated';
 my $lang_uri = 'https://github.com/languages/%s/%s'; # lang, type
 my $repo_uri = 'https://github.com/%s/%s'; # author, project
+my $base_uri = 'https://github.com/%s'; # author
+my $git_uri  = 'git://github.com/%s/%s.git'; # author, project
 my $cache;
 
 my $list_scraper = scraper {
@@ -28,6 +30,9 @@ my $repo_scraper = scraper {
     process 'div#readme',                 'readme'         => sub { $_->as_HTML };
     process 'div.actor div.gravatar img', 'gravatar'       => '@src';
     process 'div.actor div.name a',       'actor'          => 'TEXT';
+    process 'span.fork-flag span a',      'forked_from'    => 'TEXT';
+    process 'li.watchers a',              'watchers'       => 'TEXT';
+    process 'li.forks a',                 'forks'          => 'TEXT';
 };
 
 create_feed($language, $type);
@@ -45,13 +50,14 @@ sub create_feed {
         my $author  = $repo->{author} or next;
         my $project = $repo->{project} or next;
         my $info    = repo_info($author, $project);
+        my $content = make_content($repo, $info);
         my $entry = XML::Feed::Entry->new('RSS');
            $entry->title(sprintf '%s / %s', $repo->{author}, $repo->{project});
            $entry->link(sprintf $repo_uri, $repo->{author}, $repo->{project});
            $entry->author($repo->{author});
            $entry->issued(DateTime::Format::DateParse->parse_datetime($info->{modified}));
            $entry->summary($repo->{description}) if $repo->{description};
-           $entry->content(make_content($repo, $info));
+           $entry->content($content);
         $feed->add_entry($entry);
     }
     print $feed->as_xml;
@@ -68,8 +74,24 @@ sub make_content {
     my ($repo, $info) = @_;
     my $content = '';
     $content .= sprintf(
-        '<a href="https://github.com/%s"><img src="%s" alt="%s" title="%s" width="30" height="30" align="left" /></a>',
-        $info->{actor} || '',
+        '<a href="%s">%s</a>',
+        sprintf($repo_uri, $repo->{author}, $repo->{project}),
+        sprintf('%s/%s', $repo->{author}, $repo->{project}),
+    );
+    $content .= sprintf(
+        ' forked from <a href="%s">%s</a>',
+        sprintf($base_uri, $info->{forked_from}),
+        sprintf($base_uri, $info->{forked_from}),
+    ) if $info->{forked_from};
+    $content .= sprintf(
+        ' Watchers:%d Forks:%d',
+        $info->{watchers} || 0,
+        $info->{forks} || 0,
+    );
+    $content .= '<br clear="all" />';
+    $content .= sprintf(
+        '<a href="%s"><img src="%s" alt="%s" title="%s" width="30" height="30" align="left" /></a>',
+        sprintf($base_uri, $repo->{info}),
         $info->{gravatar},
         $info->{actor} || '',
         $info->{actor} || '',
