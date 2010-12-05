@@ -88,13 +88,18 @@ sub make_content {
         $info->{watchers} || 0,
         $info->{forks} || 0,
     );
+    $content .= sprintf(
+        ' <a href="%s">clone</a>',
+        sprintf($git_uri, $repo->{author}, $repo->{project}),
+    );
     $content .= '<br clear="all" />';
     $content .= sprintf(
-        '<a href="%s"><img src="%s" alt="%s" title="%s" width="30" height="30" align="left" /></a>',
-        sprintf($base_uri, $info->{actor}),
+        '%s<img src="%s" alt="%s" title="%s" width="30" height="30" align="left" />%s',
+        $info->{actor} ? sprintf('<a href="%s">', sprintf($base_uri, $info->{actor})) : '',
         $info->{gravatar},
         $info->{actor} || '',
         $info->{actor} || '',
+        $info->{actor} ? '</a>' : '',
     ) if $info->{gravatar};
     $content .= sprintf(
         '<pre>%s</pre>',
@@ -102,7 +107,7 @@ sub make_content {
     ) if $info->{commit_message};
     $content .= '<br clear="all" />';
     $content .= $info->{readme} || $info->{description} || '';
-    $content .= sprintf '<br clear="all" /><input value="git clone git://github.com/%s/%s.git" style="width: 60em" readonly="readonly" />', $repo->{author}, $repo->{project};
+    $content .= '<br clear="all" />';
     $content;
 }
 
