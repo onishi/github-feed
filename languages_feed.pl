@@ -81,7 +81,7 @@ sub make_content {
     $content .= sprintf(
         ' forked from <a href="%s">%s</a>',
         sprintf($base_uri, $info->{forked_from}),
-        sprintf($base_uri, $info->{forked_from}),
+        $info->{forked_from},
     ) if $info->{forked_from};
     $content .= sprintf(
         ' Watchers:%d Forks:%d',
@@ -91,7 +91,7 @@ sub make_content {
     $content .= '<br clear="all" />';
     $content .= sprintf(
         '<a href="%s"><img src="%s" alt="%s" title="%s" width="30" height="30" align="left" /></a>',
-        sprintf($base_uri, $repo->{info}),
+        sprintf($base_uri, $info->{actor}),
         $info->{gravatar},
         $info->{actor} || '',
         $info->{actor} || '',
