@@ -13,7 +13,7 @@ my $type     = shift || 'updated';
 my $lang_uri = 'https://github.com/languages/%s/%s'; # lang, type
 my $repo_uri = 'https://github.com/%s/%s'; # author, project
 my $base_uri = 'https://github.com/%s'; # author
-my $git_uri  = 'git://github.com/%s/%s.git'; # author, project
+my $git_uri  = 'https://github.com/%s/%s.git'; # author, project
 my $cache;
 
 my $list_scraper = scraper {
